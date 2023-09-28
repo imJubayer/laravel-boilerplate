@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Gate;
+use LucasDotVin\Soulbscription\Models\Plan;
 
 class UserController extends Controller
 {
@@ -22,6 +23,32 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        $subscriptionPlan = auth()->user()->subscription->plan->name ?? null;
+        // $newPlan = Plan::where('name', 'Silver Yearly')->first();
+        // auth()->user()->switchTo($newPlan);
+        // auth()->user()->subscription->renew();
+
+        // Auth::user()->lastSubscription()->renew();
+        // dd(Auth::user()->lastSubscription()->renew());
+        // dd(auth()->user()->subscription->plan->features);
+        foreach (auth()->user()->subscription->plan->features as $key => $feature) {
+            dd($feature->name);
+        }
+        // dd(Auth::user()->balance('manage-tasks-limited'));
+        $feature = match ($subscriptionPlan) {
+            'Silver Monthly', 'Silver Yearly', 'Trial' => 'manage-tasks-limited',
+            'Gold Monthly', 'Gold Yearly'              => 'manage-tasks-unlimited',
+        };
+        
+        try {
+            
+            // auth()->user()->subscription->renew();
+            // auth()->user()->consume($feature, 1);
+        } catch (\Throwable $th) {
+            dd('gg');
+            //throw $th;
+        }
+        dd(auth()->user()->balance('manage-tasks-limited'));
         if (Gate::allows('superadmin') || Gate::allows('view-users')) {
             $limit = $request->limit;
             $search = $request->search; // Get the search query from the request
@@ -38,7 +65,6 @@ class UserController extends Controller
         } else {
             $response = abort(403, trans('messages.permissions.denied'));
         }
-
         return $response;
     }
 

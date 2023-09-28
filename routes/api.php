@@ -32,7 +32,7 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('reset-password', [ResetPasswordController::class, 'reset'])->name('password.reset');
 
-Route::middleware(['auth:sanctum', 'role:superadmin|admin'])->group(function(){
+Route::middleware(['auth:sanctum', 'role:superadmin|admin|teacher'])->group(function(){
     Route::get('/user/change-status/{user}', [UserController::class, 'changeStatus']);
     // User
     Route::get('/users', [UserController::class, 'index']);

@@ -10,7 +10,7 @@ use App\Models\Profile;
 use App\Models\Settings;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Database\Seeders\PermissionSeeder;
+use LucasDotVin\Soulbscription\Models\Plan;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
         // $this->call(PermissionSeeder::class);
         $this->call([
             PermissionSeeder::class,
+            FeatureSeeder::class,
+            PlanSeeder::class
         ]);
         $superAdminRole = Role::create(['name' => 'superadmin', 'guard_name' => 'sanctum', 'priority' => 1]);
         $adminRole = Role::create(['name' => 'admin', 'guard_name' => 'sanctum', 'priority' => 2]);
@@ -72,6 +74,7 @@ class DatabaseSeeder extends Seeder
         $users->each(function ($user, $key){
             if ($key < 10) {
                 $user->assignRole('teacher');
+                $user->subscribeTo(Plan::where('name', 'Trial')->first());
             } elseif ($key < 90) {
                 $user->assignRole('student');
             } else {
